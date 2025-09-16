@@ -6,7 +6,7 @@ const SignInPage = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState({ type: '', text: '' });
-  
+
   const [formData, setFormData] = useState({
     email: '',
     password: '',
@@ -27,7 +27,7 @@ const SignInPage = () => {
       setMessage({ type: 'error', text: 'Email and password are required' });
       return false;
     }
-    
+
     if (!isLogin) {
       if (!formData.firstName) {
         setMessage({ type: 'error', text: 'First name is required for registration' });
@@ -47,22 +47,22 @@ const SignInPage = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    
+
     if (!validateForm()) return;
-    
+
     setLoading(true);
     setMessage({ type: '', text: '' });
 
     try {
       const endpoint = isLogin ? '/api/auth/login' : '/api/auth/register';
-      const payload = isLogin 
+      const payload = isLogin
         ? { email: formData.email, password: formData.password }
-        : { 
-            firstName: formData.firstName,
-            lastName: formData.lastName,
-            email: formData.email, 
-            password: formData.password 
-          };
+        : {
+          firstName: formData.firstName,
+          lastName: formData.lastName,
+          email: formData.email,
+          password: formData.password
+        };
 
       const response = await fetch(`http://localhost:5000${endpoint}`, {
         method: 'POST',
@@ -75,11 +75,11 @@ const SignInPage = () => {
       const data = await response.json();
 
       if (response.ok) {
-        setMessage({ 
-          type: 'success', 
-          text: isLogin ? 'Login successful!' : 'Registration successful!' 
+        setMessage({
+          type: 'success',
+          text: isLogin ? 'Login successful!' : 'Registration successful!'
         });
-        
+
         if (data.token) {
           localStorage.setItem('token', data.token);
           console.log('Token saved:', data.token);
@@ -89,9 +89,9 @@ const SignInPage = () => {
         setMessage({ type: 'error', text: data.message || 'Authentication failed' });
       }
     } catch (error) {
-      setMessage({ 
-        type: 'error', 
-        text: 'Network error. Please check if your backend server is running.' 
+      setMessage({
+        type: 'error',
+        text: 'Network error. Please check if your backend server is running.'
       });
     } finally {
       setLoading(false);
@@ -224,11 +224,10 @@ const SignInPage = () => {
 
             {/* Message display */}
             {message.text && (
-              <div className={`flex items-center space-x-2 sm:space-x-3 p-3 sm:p-4 rounded-lg md:rounded-xl transition-all duration-300 ${
-                message.type === 'error' 
-                  ? 'bg-red-50 text-red-700 border border-red-200' 
+              <div className={`flex items-center space-x-2 sm:space-x-3 p-3 sm:p-4 rounded-lg md:rounded-xl transition-all duration-300 ${message.type === 'error'
+                  ? 'bg-red-50 text-red-700 border border-red-200'
                   : 'bg-green-50 text-green-700 border border-green-200'
-              }`}>
+                }`}>
                 {message.type === 'error' ? (
                   <AlertCircle className="h-4 w-4 sm:h-5 sm:w-5 flex-shrink-0" />
                 ) : (
@@ -264,8 +263,8 @@ const SignInPage = () => {
                 onClick={toggleMode}
                 className="text-green-600 hover:text-green-700 text-xs sm:text-sm font-semibold focus:outline-none focus:underline transition-colors duration-200"
               >
-                {isLogin 
-                  ? "New here? Create an account" 
+                {isLogin
+                  ? "New here? Create an account"
                   : "Already have an account? Sign in"
                 }
               </button>
