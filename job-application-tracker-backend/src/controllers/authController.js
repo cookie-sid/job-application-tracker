@@ -31,7 +31,7 @@ const register = async (req, res) => {
       });
     }
 
-    const { firstName, lastName, email, password } = req.body;
+    const { firstName, email, password } = req.body;
 
     // Check if user already exists
     const { data: existingUser } = await supabase
@@ -59,11 +59,10 @@ const register = async (req, res) => {
           email: email.toLowerCase().trim(),
           password: hashedPassword,
           first_name: firstName.trim(),
-          last_name: lastName.trim(),
           skills: []
         }
       ])
-      .select('id, email, first_name, last_name, skills, created_at')
+      .select('id, email, first_name, skills, created_at')
       .single();
 
     if (error) {
@@ -87,7 +86,6 @@ const register = async (req, res) => {
         id: user.id,
         email: user.email,
         firstName: user.first_name,
-        lastName: user.last_name,
         skills: user.skills
       }
     });
@@ -119,7 +117,7 @@ const login = async (req, res) => {
     // Find user by email
     const { data: user, error } = await supabase
       .from('users')
-      .select('id, email, password, first_name, last_name, skills')
+      .select('id, email, password, first_name,  skills')
       .eq('email', email.toLowerCase().trim())
       .single();
 
@@ -152,7 +150,6 @@ const login = async (req, res) => {
         id: user.id,
         email: user.email,
         firstName: user.first_name,
-        lastName: user.last_name,
         skills: user.skills
       }
     });
@@ -177,7 +174,6 @@ const getProfile = async (req, res) => {
         id: user.id,
         email: user.email,
         firstName: user.first_name,
-        lastName: user.last_name,
         skills: user.skills,
         resumeUrl: user.resume_url,
         createdAt: user.created_at
@@ -205,12 +201,15 @@ const updateProfile = async (req, res) => {
       });
     }
 
-    const { firstName, lastName, skills } = req.body;
+    const { firstName, skills } = req.body;
     const userId = req.user.id;
+
+    console.log('Updating profile for userId:', userId, { firstName, skills });
+
+    // Prepare update data
 
     const updateData = {};
     if (firstName) updateData.first_name = firstName.trim();
-    if (lastName) updateData.last_name = lastName.trim();
     if (skills && Array.isArray(skills)) {
       updateData.skills = skills.filter(skill => skill.trim().length > 0);
     }
@@ -219,7 +218,7 @@ const updateProfile = async (req, res) => {
       .from('users')
       .update(updateData)
       .eq('id', userId)
-      .select('id, email, first_name, last_name, skills, resume_url')
+      .select('id, email, first_name, skills, resume_url')
       .single();
 
     if (error) {

@@ -16,13 +16,10 @@ import ResumeMatch from './ResumeMatch';
 import JobExtractor from './JobExtractor';
 import Profile from './Profile';
 
-const Landing = () => {
+const Landing = (props) => {
+  console.log(props);
   const [activeTab, setActiveTab] = useState('dashboard');
-  const [user, setUser] = useState({
-    firstName: 'John',
-    email: 'john@example.com',
-    skills: ['JavaScript', 'React', 'Node.js']
-  });
+  const [user, setUser] = useState(props.user);
 
   const handleLogout = () => {
     localStorage.removeItem('token');
@@ -36,6 +33,11 @@ const Landing = () => {
     { id: 'profile', label: 'Profile', icon: User }
   ];
 
+  const handleUserUpdate = (updatedUser) => {
+    setUser(updatedUser);
+    localStorage.setItem('user', JSON.stringify(updatedUser));
+  }
+
   const renderContent = () => {
     switch (activeTab) {
       case 'dashboard':
@@ -45,7 +47,7 @@ const Landing = () => {
       case 'job-extractor':
         return <JobExtractor />;
       case 'profile':
-        return <Profile user={user} setUser={setUser} />;
+        return <Profile user={user} handleUserUpdate={handleUserUpdate} />;
       default:
         return <Dashboard />;
     }

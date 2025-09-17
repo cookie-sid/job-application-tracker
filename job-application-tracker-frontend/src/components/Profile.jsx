@@ -7,20 +7,36 @@ const Profile = (props) => {
         skills: props.user.skills.join(', ')
     });
 
-    const handleSave = () => {
-        setUser({
-            ...props.user,
+    const handleSave = async () => {
+        let payload = {
+            id: props.user.id,
             firstName: formData.firstName,
-            skills: formData.skills.split(',').map(skill => skill.trim()).filter(skill => skill)
+            skills: formData.skills.split(',').map(skill => skill.trim()).filter(skill => skill),
+        };
+        const response = await fetch(`http://localhost:5000/api/auth/profile`, {
+            method: 'PUT',
+            headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${localStorage.getItem('token')}`
+            },
+            body: JSON.stringify(payload),
         });
+
+        const data = await response.json();
+        if (!response.ok) {
+            console.error('Error updating profile:', data.message || 'Unknown error');
+            return;
+        }
+        console.log('Profile updated successfully:', data);
+        props.handleUserUpdate({...props.user,...data.user});
         setEditing(false);
     };
 
     return (
         <div className="p-6">
-            <h2 className="text-2xl font-bold text-gray-900 mb-6">Profile</h2>
+            <h2 className="max-w-4xl text-2xl mx-auto font-bold text-gray-900 mb-6">Profile</h2>
 
-            <div className="max-w-2xl">
+            <div className="max-w-4xl mx-auto bg-white shadow-sm rounded-lg p-6 border border-gray-200">
                 <div className="bg-gray-50 rounded-lg p-6">
                     {editing ? (
                         <div className="space-y-4">
@@ -57,13 +73,13 @@ const Profile = (props) => {
                             <div className="flex space-x-3">
                                 <button
                                     onClick={handleSave}
-                                    className="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 transition-colors"
+                                    className="!bg-green-50 !border-green-200 text-gray-700 px-4 py-2 rounded-lg hover:bg-green-700 transition-colors"
                                 >
                                     Save Changes
                                 </button>
                                 <button
                                     onClick={() => setEditing(false)}
-                                    className="bg-gray-300 text-gray-700 px-4 py-2 rounded-lg hover:bg-gray-400 transition-colors"
+                                    className="!bg-red-50 !border-red-200 text-gray-700 px-4 py-2 rounded-lg hover:bg-gray-400 transition-colors"
                                 >
                                     Cancel
                                 </button>
@@ -94,7 +110,7 @@ const Profile = (props) => {
 
                             <button
                                 onClick={() => setEditing(true)}
-                                className="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 transition-colors"
+                                className="!bg-green-50 !border-green-200 text-green-800 px-4 py-2 rounded-lg hover:bg-green-100 transition-colors"
                             >
                                 Edit Profile
                             </button>

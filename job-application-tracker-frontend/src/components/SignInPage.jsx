@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { Eye, EyeOff, Mail, Lock, User, AlertCircle, CheckCircle } from 'lucide-react';
 
-const SignInPage = () => {
+const SignInPage = (props) => {
   const [isLogin, setIsLogin] = useState(true);
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -83,6 +83,7 @@ const SignInPage = () => {
         if (data.token) {
           localStorage.setItem('token', data.token);
           console.log('Token saved:', data.token);
+          props.handleSignIn(data.user);
           // TODO: Redirect to dashboard
         }
       } else {
